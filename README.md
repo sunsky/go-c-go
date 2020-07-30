@@ -2,6 +2,8 @@
 
 ```
 #go invoke c , then c invoke go
-this can be usefull for load/unload dynamic library
+#this can be useful for load/unload dynamic library
 
+go build -buildmode=c-shared -o add.so add.go
+go run main.go
 ```
