@@ -1,28 +1,39 @@
-
 #include <stdio.h>
 #include <dlfcn.h>
-//#include "add.h"
 
-int call_so(char * so_path, char * fn, int a, void *b)
+
+int call_so(char * so_path, char * fn, int a, char* b)
 {
-
-	int* bp= (int*)(b);
-	printf("args %s %s %d %d \n", so_path, fn, a, *bp);
-	//return 0;
+	printf("args %s %s %d %s \n", so_path, fn, a, b);
     void* handle = dlopen(so_path, RTLD_LAZY);
-    int (*add)(int a, void* b);
+    if(handle==NULL){
+        printf("dlopen failed %s\n", dlerror());
+        return 1;
+    }
+    printf("dlopen ok %s\n", dlerror());
+
+    int (*add)(int a, char* b);
 
     add = dlsym(handle, fn);
-    int sum = add(a, b );
-    printf("add  %d\n", sum);
+    if(add==NULL){
+        printf("dlsym failed %s\n", dlerror());
+        return 1;
+    }
+    printf("dlsym ok %s  %lu \n", dlerror(), (unsigned long)(&add));
 
-    dlclose(handle);
+    int sum = add(a, b);
+    printf("add  %d\n", sum);
+    int flg=(int)dlclose(handle);
+    if(flg==-1){
+        printf("dlclose failed %s\n", dlerror());
+        return 1;
+    }
+    printf("dlclose ok %s   \n", dlerror());
     return sum;
 }
-
 int main(){
-	int b = 3;
-	int ret = call_so("/Users/qiangjian/go-c-go/add.so","Add", 2, &b);
+	char* b = "i am from 中国 gcc";
+	int ret = call_so("./add.so","Add", 2, b);
 	printf("ret %d\n", ret);
 	return 0;
 }
