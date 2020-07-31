@@ -3,7 +3,7 @@
 ```
 #go invoke c , then c invoke go
 #this can be useful for load/unload dynamic library
+# only test for linux
 
-go build -buildmode=c-shared -o add.so add.go
-go run main.go
+sh run.sh
 ```
